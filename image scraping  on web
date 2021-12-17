@@ -1,0 +1,36 @@
+import requests
+import random
+import re
+from bs4 import BeautifulSoup
+user_agent_list = [
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:77.0) Gecko/20100101 Firefox/77.0',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
+]
+for pageno in range(13,40):
+    url = 'https://www.gettyimages.in/photos/ed-harris-actor?assettype=image&family=editorial&page='+str(pageno)+'&phrase=ed%20harris%20actor&sort=best'
+    for i in range(1,4):
+        #Pick a random user agent
+        user_agent = random.choice(user_agent_list)
+        #Set the headers 
+        headers = {'User-Agent': user_agent}
+        #Make the request
+        response = requests.get(url,headers=headers)
+        #print(response.status_code)
+
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+
+    link = soup.find_all("img",{"class": "MosaicAsset-module__thumb___epLhd"})
+    #print(link)
+    imagelinks=[]
+    for i in link :
+        imagelinks.append(i["src"])
+    for i, imagelink in enumerate(imagelinks):
+        response = requests.get(imagelink)
+        imagename = r'C:\Users\reddy\OneDrive\Desktop\face_recognition\ed harris\images' + '/' + str(i + 1)+ str(pageno) + '.jpg'
+        with open(imagename, 'wb') as file:
+            file.write(response.content)
+    print(pageno,'is done.....')
